@@ -34,7 +34,7 @@ def handle_message(message):
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": CHAT_CONFIG}
+                {"role": "system", "content": CHAT_CONFIG},
                 {"role": "user", "content": message.text}
             ]
         )
