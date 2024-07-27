@@ -2,5 +2,3 @@ Flask
 pyTelegramBotAPI
 openai
 python-dotenv
-requests
-Pillow
