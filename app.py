@@ -27,7 +27,7 @@ def webhook():
 def send_welcome(message):
     tb.reply_to(message, "Hi there, I am Asian Fleming, your virtual physics assistant!")
 
-@tb.message_handler()
+@tb.message_handler(content_types=["text"])
 def handle_message(message):
     try:
         response = client.chat.completions.create(
@@ -36,6 +36,22 @@ def handle_message(message):
                 {"role": "system", "content": "You are an AI assistant named Asian Fleming, created by Ariq Koh, skilled in explaining Physics concepts under the Singapore H2/H1 A Levels syllabus. Your replies should only be in text with no formatting. Your answers should be relevant to the latest syllabus."},
                 {"role": "user", "content": message.text}
             ]
+        )
+        reply_text = response.choices[0].message.content
+        tb.reply_to(message, reply_text)
+    except:
+        tb.reply_to(message, "Sorry, the server is currently offline. Please try again later.")
+
+@tb.message_handler(content_types=["photo"])
+def handle_photo(message):
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "You are an AI assistant named Asian Fleming, created by Ariq Koh, skilled in explaining Physics concepts under the Singapore H2/H1 A Levels syllabus. Your replies should only be in text with no formatting. Your answers should be relevant to the latest syllabus."},
+                {"role": "user", "content": message.photo}
+            ],
+            max_tokens=300
         )
         reply_text = response.choices[0].message.content
         tb.reply_to(message, reply_text)
