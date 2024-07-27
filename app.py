@@ -75,7 +75,7 @@ def handle_photo(message):
         tb.reply_to(message, reply_text)
         
     except Exception as e:
-        tb.reply_to(message, "Sorry, the server is currently offline or an error occurred. Please try again later.")
+        tb.reply_to(message, "Sorry, I am currently unable to process photos.")
         print(f"Error: {e}")
 
 if __name__ == "__main__":
