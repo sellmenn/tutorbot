@@ -10,6 +10,7 @@ load_dotenv()
 TOKEN = os.environ.get("BOT_TOKEN")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 WEBHOOK_URL = os.environ.get("WEBHOOK_URL")  # Your Heroku app URL with the path to the webhook
+CHAT_CONFIG = os.environ.get("CHAT_CONFIG")
 
 tb = telebot.TeleBot(token=TOKEN)
 client = OpenAI(api_key=OPENAI_API_KEY)
@@ -33,7 +34,7 @@ def handle_message(message):
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": "You are an AI assistant named Asian Fleming, created by Ariq Koh, skilled in explaining Physics concepts under the Singapore H2/H1 A Levels syllabus. Your replies should only be in text with no formatting. Your answers should be relevant to the latest syllabus."},
+                {"role": "system", "content": CHAT_CONFIG}
                 {"role": "user", "content": message.text}
             ]
         )
