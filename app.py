@@ -44,12 +44,7 @@ def handle_message(message):
 
 @tb.message_handler(content_types=["photo"])
 def handle_photo(message):
-    try:
-        ...
-        
-    except Exception as e:
-        tb.reply_to(message, "Sorry, I am currently unable to process photos.")
-        print(f"Error: {e}")
+    tb.reply_to(message, "Sorry, I am currently unable to process photos.")
 
 if __name__ == "__main__":
     # Set up webhook
