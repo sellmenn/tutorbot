@@ -3,6 +3,9 @@ from flask import Flask, request
 import telebot
 from openai import OpenAI
 from dotenv import load_dotenv
+from PIL import Image
+import requests
+import io
 
 load_dotenv()
 
@@ -45,18 +48,35 @@ def handle_message(message):
 @tb.message_handler(content_types=["photo"])
 def handle_photo(message):
     try:
-        response = client.chat.completions.create(
+        # Download the photo
+        file_id = message.photo[-1].file_id  # Get the highest resolution photo
+        file_info = tb.get_file(file_id)
+        file_path = file_info.file_path
+        file_url = f"https://api.telegram.org/file/bot{TOKEN}/{file_path}"
+        
+        # Fetch the image
+        response = requests.get(file_url)
+        image_bytes = io.BytesIO(response.content)
+
+        # Process the image (e.g., convert to text with OCR, analyze, etc.)
+        # For example, you could use an OCR service here
+        # For now, let's assume we have a placeholder for this:
+        image_text = "Extracted text from the image."
+
+        # Use OpenAI to process the extracted text (if applicable)
+        openai_response = OpenAI.Completion.create(
             model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "You are an AI assistant named Asian Fleming, created by Ariq Koh, skilled in explaining Physics concepts under the Singapore H2/H1 A Levels syllabus. Your replies should only be in text with no formatting. Your answers should be relevant to the latest syllabus."},
-                {"role": "user", "content": message.photo}
-            ],
+            prompt=f"Extracted text from an image: {image_text}",
             max_tokens=300
         )
-        reply_text = response.choices[0].message.content
+        reply_text = openai_response.choices[0].text.strip()
+
+        # Reply to the user
         tb.reply_to(message, reply_text)
-    except:
-        tb.reply_to(message, "Sorry, the server is currently offline. Please try again later.")
+        
+    except Exception as e:
+        tb.reply_to(message, "Sorry, the server is currently offline or an error occurred. Please try again later.")
+        print(f"Error: {e}")
 
 if __name__ == "__main__":
     # Set up webhook
