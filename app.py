@@ -26,7 +26,6 @@ def webhook():
 @tb.message_handler(commands=["start"])
 def send_welcome(message):
     tb.reply_to(message, "Hi there, I am Asian Fleming, your virtual physics assistant!")
-    tb.send_message(message.chat.id, "How may I help?")
 
 @tb.message_handler()
 def handle_message(message):
