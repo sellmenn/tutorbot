@@ -1,15 +1,14 @@
 import os
 from flask import Flask, request
 import telebot
+from telebot import types
 from openai import OpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
-
-# Initialize bot and OpenAI client
 TOKEN = os.environ.get("BOT_TOKEN")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-WEBHOOK_URL = os.environ.get("WEBHOOK_URL")  # Your Heroku app URL with the path to the webhook
+WEBHOOK_URL = os.environ.get("WEBHOOK_URL")  # Heroku app URL with the path to the webhook
 CHAT_CONFIG = os.environ.get("CHAT_CONFIG")
 
 tb = telebot.TeleBot(token=TOKEN)
@@ -48,7 +47,5 @@ def handle_photo(message):
     tb.reply_to(message, "Sorry, I am currently unable to process photos.")
 
 if __name__ == "__main__":
-    # Set up webhook
     tb.set_webhook(url=WEBHOOK_URL)
-    # Run Flask application
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
