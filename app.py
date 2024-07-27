@@ -37,7 +37,7 @@ def handle_message(message):
             {"role": "user", "content": message.text}
         ]
     )
-    reply_text = response.choices[0].message['content']
+    reply_text = response.choices[0].message.content
     tb.reply_to(message, reply_text)
 
 if __name__ == "__main__":
