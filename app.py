@@ -2,7 +2,6 @@ import os
 import sys
 from flask import Flask, request
 import telebot
-import regex
 from telebot import types
 from openai import OpenAI
 from dotenv import load_dotenv
