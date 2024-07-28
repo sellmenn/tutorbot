@@ -1,4 +1,5 @@
 import os
+import sys
 from flask import Flask, request
 import telebot
 from telebot import types
@@ -38,6 +39,7 @@ def handle_message(message):
             ]
         )
         reply_text = response.choices[0].message.content
+        sys.stdout.write(f"message: {message}\nresponse: {reply_text}")
         tb.reply_to(message, reply_text)
     except:
         tb.reply_to(message, "Sorry, the server is currently offline. Please try again later.")
