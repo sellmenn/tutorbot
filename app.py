@@ -39,7 +39,7 @@ def handle_message(message):
                 {"role": "user", "content": message.text}
             ]
         )
-        reply_text = response.choices[0].message['content']
+        reply_text = response.choices[0].message.content
         tb.reply_to(message, reply_text)
         logging.info(f"user: {message.from_user.username}, Message: {message.text}, Response: {reply_text}")
 
