@@ -34,7 +34,7 @@ def send_welcome(message):
 def handle_message(message):
     try:
         response = client.chat.completions.create(
-            model="gpt-4",
+            model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": CHAT_CONFIG},
                 {"role": "user", "content": message.text}
