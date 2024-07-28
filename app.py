@@ -39,9 +39,9 @@ def handle_message(message):
             ]
         )
         reply_text = response.choices[0].message.content
-        sys.stdout.write(f"user: {message.from_user.username}, Message: {message.text}, Response: {reply_text}")
         tb.reply_to(message, reply_text)
-        return "OK", 200
+        sys.stdout.write(f"user: {message.from_user.username}, Message: {message.text}, Response: {reply_text}")
+
     except Exception as e:
         tb.reply_to(message, "Sorry, the server is currently offline. Please try again later.")
         sys.stdout.write(f"Error occured: {e}")
