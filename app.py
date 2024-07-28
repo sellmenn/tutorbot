@@ -1,19 +1,20 @@
 import os
-import sys
+import logging
 from dotenv import load_dotenv
 from flask import Flask, request
-from waitress import serve
 import telebot
-from openai import OpenAI
+import openai
 
+# Load environment variables
 load_dotenv()
 TOKEN = os.environ.get("BOT_TOKEN")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 WEBHOOK_URL = os.environ.get("WEBHOOK_URL")  # Heroku app URL with the path to the webhook
 CHAT_CONFIG = os.environ.get("CHAT_CONFIG")
 
+# Initialize Telegram bot and OpenAI
 tb = telebot.TeleBot(token=TOKEN)
-client = OpenAI(api_key=OPENAI_API_KEY)
+openai.api_key = OPENAI_API_KEY
 
 app = Flask(__name__)
 
@@ -31,20 +32,20 @@ def send_welcome(message):
 @tb.message_handler(content_types=["text"])
 def handle_message(message):
     try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
             messages=[
-                {"role": "system", "content": f"{CHAT_CONFIG}"},
+                {"role": "system", "content": CHAT_CONFIG},
                 {"role": "user", "content": message.text}
             ]
         )
-        reply_text = response.choices[0].message.content
+        reply_text = response.choices[0].message['content']
         tb.reply_to(message, reply_text)
-        sys.stdout.write(f"user: {message.from_user.username}, Message: {message.text}, Response: {reply_text} ")
+        logging.info(f"user: {message.from_user.username}, Message: {message.text}, Response: {reply_text}")
 
     except Exception as e:
         tb.reply_to(message, "Sorry, the server is currently offline. Please try again later.")
-        sys.stdout.write(f"Error occured: {e}")
+        logging.error(f"Error occurred: {e}", exc_info=True)
 
 @tb.message_handler(content_types=["photo"])
 def handle_photo(message):
@@ -52,4 +53,6 @@ def handle_photo(message):
 
 if __name__ == "__main__":
     tb.set_webhook(url=WEBHOOK_URL)
-    serve(app, host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    from waitress import serve
+    serve(app, host='0.0.0.0', port=port)
