@@ -1,10 +1,10 @@
 import os
 import sys
-from flask import Flask, request
-import telebot
-from telebot import types
-from openai import OpenAI
 from dotenv import load_dotenv
+from flask import Flask, request
+from waitress import serve
+import telebot
+from openai import OpenAI
 
 load_dotenv()
 TOKEN = os.environ.get("BOT_TOKEN")
@@ -52,4 +52,4 @@ def handle_photo(message):
 
 if __name__ == "__main__":
     tb.set_webhook(url=WEBHOOK_URL)
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    serve(app, host="0.0.0.0", port=8080)
