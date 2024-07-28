@@ -3,7 +3,7 @@ import logging
 from dotenv import load_dotenv
 from flask import Flask, request
 import telebot
-import openai
+from openai import OpenAI
 
 # Load environment variables
 load_dotenv()
@@ -14,7 +14,7 @@ CHAT_CONFIG = os.environ.get("CHAT_CONFIG")
 
 # Initialize Telegram bot and OpenAI
 tb = telebot.TeleBot(token=TOKEN)
-openai.api_key = OPENAI_API_KEY
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 app = Flask(__name__)
 
@@ -32,7 +32,7 @@ def send_welcome(message):
 @tb.message_handler(content_types=["text"])
 def handle_message(message):
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": CHAT_CONFIG},
