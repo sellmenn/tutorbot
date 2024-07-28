@@ -2,6 +2,7 @@ import os
 import sys
 from flask import Flask, request
 import telebot
+import regex
 from telebot import types
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -22,6 +23,7 @@ def webhook():
     json_str = request.get_data(as_text=True)
     update = telebot.types.Update.de_json(json_str)
     tb.process_new_updates([update])
+    sys.stdout.write(f"received: {json_str}")
     return "OK", 200
 
 @tb.message_handler(commands=["start"])
@@ -34,7 +36,7 @@ def handle_message(message):
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": CHAT_CONFIG},
+                {"role": "system", "content": f"{CHAT_CONFIG}"},
                 {"role": "user", "content": message.text}
             ]
         )
