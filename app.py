@@ -1,3 +1,4 @@
+import sys
 import os
 import logging
 from dotenv import load_dotenv
@@ -41,11 +42,11 @@ def handle_message(message):
         )
         reply_text = response.choices[0].message.content
         tb.reply_to(message, reply_text)
-        logging.info(f"user: {message.from_user.username}, Message: {message.text}, Response: {reply_text}")
+        sys.stdout.write(f"user: {message.from_user.username}, Message: {message.text}, Response: {reply_text}")
 
     except Exception as e:
         tb.reply_to(message, "Sorry, the server is currently offline. Please try again later.")
-        logging.error(f"Error occurred: {e}", exc_info=True)
+        sys.stdout.write(f"Error occurred: {e}")
 
 @tb.message_handler(content_types=["photo"])
 def handle_photo(message):
