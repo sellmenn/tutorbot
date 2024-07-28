@@ -41,8 +41,9 @@ def handle_message(message):
         reply_text = response.choices[0].message.content
         sys.stdout.write(f"user: {message.username}\nMessage: {message.text}\nResponse: {reply_text}")
         tb.reply_to(message, reply_text)
-    except:
+    except Exception as e:
         tb.reply_to(message, "Sorry, the server is currently offline. Please try again later.")
+        sys.stdout.write(f"Error: {e}")
 
 @tb.message_handler(content_types=["photo"])
 def handle_photo(message):
