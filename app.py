@@ -52,4 +52,4 @@ def handle_photo(message):
 
 if __name__ == "__main__":
     tb.set_webhook(url=WEBHOOK_URL)
-    serve(app, host="0.0.0.0", port=8080)
+    serve(app, host="0.0.0.0", port=5000)
