@@ -22,7 +22,7 @@ def webhook():
     json_str = request.get_data(as_text=True)
     update = telebot.types.Update.de_json(json_str)
     tb.process_new_updates([update])
-    return 200
+    return "OK", 200
 
 @tb.message_handler(commands=["start"])
 def send_welcome(message):
@@ -41,16 +41,14 @@ def handle_message(message):
         reply_text = response.choices[0].message.content
         sys.stdout.write(f"user: {message.from_user.username}, Message: {message.text}, Response: {reply_text}")
         tb.reply_to(message, reply_text)
-        return 200
+        return "OK", 200
     except Exception as e:
         tb.reply_to(message, "Sorry, the server is currently offline. Please try again later.")
         sys.stdout.write(f"Error occured: {e}")
-        return 404
 
 @tb.message_handler(content_types=["photo"])
 def handle_photo(message):
     tb.reply_to(message, "Sorry, I am currently unable to process photos.")
-    return 404
 
 if __name__ == "__main__":
     tb.set_webhook(url=WEBHOOK_URL)
