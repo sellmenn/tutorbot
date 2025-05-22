@@ -1,6 +1,6 @@
 import sys
 import os
-import logging
+import traceback
 from dotenv import load_dotenv
 from flask import Flask, request
 import telebot
@@ -36,8 +36,8 @@ def handle_message(message):
     try:
         username = message.from_user.username
         if username not in temp_history:
-            temp_history[username] = "Chat history: "
-        client_input = message.text + " " + temp_history[username]
+            temp_history[username] = "Chat history:\n"
+        client_input = temp_history[username] + "\ncurrent message: " + message.text
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
@@ -46,12 +46,15 @@ def handle_message(message):
             ]
         )
         reply_text = response.choices[0].message.content
+        temp_history[username] += f"Message: {message.text}, Response: {reply_text}\n"
         tb.reply_to(message, reply_text)
         sys.stdout.write(f"user: {message.from_user.username}, Message: {message.text}, Response: {reply_text} ")
+        sys.stdout.write(f"user: {message.from_user.username}, History: {temp_history[username]} ")
 
     except Exception as e:
         tb.reply_to(message, "Sorry, the server is currently offline. Please try again later.")
         sys.stdout.write(f"Error occurred: {e}")
+        sys.stdout.write(traceback.format_exc())
 
 @tb.message_handler(content_types=["photo"])
 def handle_photo(message):
