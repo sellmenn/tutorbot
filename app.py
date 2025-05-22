@@ -16,6 +16,7 @@ CHAT_CONFIG = os.environ.get("CHAT_CONFIG")
 # Initialize Telegram bot and OpenAI
 tb = telebot.TeleBot(token=TOKEN)
 client = OpenAI(api_key=OPENAI_API_KEY)
+temp_history = {}
 
 app = Flask(__name__)
 
@@ -33,11 +34,15 @@ def send_welcome(message):
 @tb.message_handler(content_types=["text"])
 def handle_message(message):
     try:
+        username = message.from_user.username
+        if username not in temp_history:
+            temp_history[username] = "Chat history: "
+        client_input = message.text + " " + temp_history[username]
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": CHAT_CONFIG},
-                {"role": "user", "content": message.text}
+                {"role": "user", "content": client_input}
             ]
         )
         reply_text = response.choices[0].message.content
