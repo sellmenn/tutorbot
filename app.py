@@ -48,8 +48,8 @@ def handle_message(message):
         reply_text = response.choices[0].message.content
         temp_history[username] += f"Message: {message.text}, Response: {reply_text}\n"
         tb.reply_to(message, reply_text)
-        sys.stdout.write(f"user: {message.from_user.username}, Message: {message.text}, Response: {reply_text} ")
-        sys.stdout.write(f"user: {message.from_user.username}, History: {temp_history[username]} ")
+        sys.stdout.write(f"\nuser: {message.from_user.username}\nMessage: {message.text}\nResponse: {reply_text} ")
+        sys.stdout.write(f"\nHistory: {temp_history[username]}\n")
 
     except Exception as e:
         tb.reply_to(message, "Sorry, the server is currently offline. Please try again later.")
