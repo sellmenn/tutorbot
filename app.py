@@ -5,6 +5,9 @@ from dotenv import load_dotenv
 from flask import Flask, request
 import telebot
 from openai import OpenAI
+import base64
+import requests
+
 
 # Load environment variables
 load_dotenv()
@@ -56,9 +59,52 @@ def handle_message(message):
         sys.stdout.write(f"Error occurred: {e}")
         sys.stdout.write(traceback.format_exc())
 
+
 @tb.message_handler(content_types=["photo"])
 def handle_photo(message):
-    tb.reply_to(message, "Sorry, I am currently unable to process photos.")
+    try:
+        username = message.from_user.username or str(message.from_user.id)
+        file_info = tb.get_file(message.photo[-1].file_id)
+        file_url = f"https://api.telegram.org/file/bot{TOKEN}/{file_info.file_path}"
+
+        # Download the image
+        response = requests.get(file_url)
+        image_bytes = response.content
+
+        # Convert to base64 for OpenAI if needed
+        base64_image = base64.b64encode(image_bytes).decode("utf-8")
+
+        # Prompt to ask with the image
+        prompt = "Explain this image to a student."
+
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": CHAT_CONFIG},
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt},
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{base64_image}"
+                            },
+                        },
+                    ],
+                }
+            ]
+        )
+
+        reply_text = response.choices[0].message.content
+        tb.reply_to(message, reply_text)
+        sys.stdout.write(f"\nUser: {username}\nPhoto analyzed. Response: {reply_text}\n")
+
+    except Exception as e:
+        tb.reply_to(message, "Sorry, I couldn't process the image.")
+        sys.stdout.write(f"Error handling photo: {e}\n")
+        sys.stdout.write(traceback.format_exc())
+
 
 if __name__ == "__main__":
     tb.set_webhook(url=WEBHOOK_URL)
